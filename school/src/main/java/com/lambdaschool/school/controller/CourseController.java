@@ -23,13 +23,24 @@ public class CourseController
 
 
     @ApiOperation(value = "Returns all courses", response = Course.class, responseContainer = "List")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "page", dataType = "integr", paramType = "query",
+                    value = "Results page you want to retrieve (0..N)"),
+            @ApiImplicitParam(name = "size", dataType = "integer", paramType = "query",
+                    value = "Number of records per page."),
+            @ApiImplicitParam(name = "sort", allowMultiple = true, dataType = "string", paramType = "query",
+                    value = "Sorting criteria in the format: property(,asc|desc). " +
+                            "Default sort order is ascending. " +
+                            "Multiple sort criteria are supported.")})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Retrieving all courses", responseContainer = "List", response =
                     Course.class)})
     @GetMapping(value = "/courses", produces = {"application/json"})
-    public ResponseEntity<?> listAllCourses()
+    public ResponseEntity<?> listAllCourses(@PageableDefault(page = 0,
+            size = 3)
+                                                        Pageable pageable)
     {
-        ArrayList<Course> myCourses = courseService.findAll();
+        ArrayList<Course> myCourses = courseService.findAll(pageable);
         return new ResponseEntity<>(myCourses, HttpStatus.OK);
     }
 
